@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Memorial Oficial IPAS - Instituto Politécnico de Administração e Serviços</title>
+    <meta name="theme-color" content="#0f172a">
+    
+    <!-- Configurações PWA e Ecrã Principal para iOS e Android -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Memorial IPAS">
+    <meta name="application-name" content="Memorial IPAS">
+    <meta name="description" content="Acervo documental e memorial oficial do Instituto Politécnico de Administração e Serviços Nº 2051 / 5144.">
+    
+    <!-- Ícone Personalizado IPAS (Azul e Dourado) para iOS e Android -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='110' fill='%230f172a'/><rect x='36' y='36' width='440' height='440' rx='80' fill='none' stroke='%2338bdf8' stroke-width='20'/><text x='256' y='315' font-family='Inter, Arial, sans-serif' font-weight='900' font-size='185' fill='%23f59e0b' text-anchor='middle'>IPAS</text></svg>">
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='110' fill='%230f172a'/><rect x='36' y='36' width='440' height='440' rx='80' fill='none' stroke='%2338bdf8' stroke-width='20'/><text x='256' y='315' font-family='Inter, Arial, sans-serif' font-weight='900' font-size='185' fill='%23f59e0b' text-anchor='middle'>IPAS</text></svg>">
+    
+    <!-- Manifesto PWA Dinâmico para detetar como App Nativa no Android -->
+    <script>
+        const manifestData = {
+            "name": "Memorial IPAS",
+            "short_name": "IPAS",
+            "start_url": "./",
+            "display": "standalone",
+            "background_color": "#0f172a",
+            "theme_color": "#0f172a",
+            "icons": [
+                {
+                    "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='110' fill='%230f172a'/><text x='256' y='315' font-family='Inter, Arial, sans-serif' font-weight='900' font-size='185' fill='%23f59e0b' text-anchor='middle'>IPAS</text></svg>",
+                    "sizes": "512x512",
+                    "type": "image/svg+xml"
+                }
+            ]
+        };
+        const stringManifest = JSON.stringify(manifestData);
+        const blob = new Blob([stringManifest], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(blob);
+        const link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = manifestURL;
+        document.head.appendChild(link);
+    </script>
+
+    <!-- Tailwind CSS & FontAwesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDK (v9 Modular) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDHWHHMGs5qvqlOL6uEvW02-t4oAMZrh7I",
+            authDomain: "ipas-5fcdb.firebaseapp.com",
+            projectId: "ipas-5fcdb",
+            storageBucket: "ipas-5fcdb.firebasestorage.app",
+            messagingSenderId: "343190425220",
+            appId: "1:343190425220:web:9b3c6de1299cf59fddbcd1",
+            measurementId: "G-LB9Y5HEWZK"
+        };
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            window.db = db;
+            window.firebaseCollections = { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc };
+            window.dispatchEvent(new Event('firebase-ready'));
+        } catch (e) {
+            console.error("Erro ao iniciar Firebase:", e);
+            window.dispatchEvent(new Event('firebase-fallback'));
+        }
+    </script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ipas: {
+                            50: '#f8fafc', 100: '#f1f5f9', 800: '#1e293b', 900: '#0f172a', primary: '#1e40af', gold: '#b45309'
+                        }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { user-select: none; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; background-color: #f8fafc; padding-bottom: 75px; }
+        @media (min-width: 768px) { body { padding-bottom: 0px; } }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .academic-shadow { box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -1px rgba(15, 23, 42, 0.03); }
+    </style>
+</head>
+<body class="text-slate-800 antialiased">
+
+    <!-- Header Institucional -->
+    <header class="sticky top-0 z-40 bg-slate-900 border-b border-slate-800 text-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-3.5 cursor-pointer" onclick="filterCategory('all')">
+                    <div class="w-11 h-11 rounded-lg bg-blue-900/50 border border-blue-500/30 flex items-center justify-center text-amber-400">
+                        <i class="fa-solid fa-landmark text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-base sm:text-lg tracking-wide uppercase font-sans">
+                            Memorial Institucional <span class="text-amber-400">IPAS</span>
+                        </h1>
+                        <p class="text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5 font-medium">
+                            <span id="sync-status" class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
+                            Ref. Nº 2051 / 5144 • Zango Zero & Icolo e Bengo
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <!-- Botão Administrador -->
+                    <button onclick="openAdminAuth()" class="w-10 h-10 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white flex items-center justify-center transition border border-slate-700" title="Painel Institucional">
+                        <i class="fa-solid fa-shield-halved text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Banner Técnico / Institucional -->
+        <div class="mb-8 rounded-2xl bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white p-6 sm:p-8 shadow-xl relative overflow-hidden border border-slate-800">
+            <div class="absolute right-0 top-0 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative z-10 max-w-3xl">
+                <span class="bg-blue-500/10 text-blue-400 text-[11px] font-semibold px-3 py-1 rounded-md uppercase tracking-wider border border-blue-500/25">Regulamento & Acervo • Decreto Presidencial 210/20</span>
+                <h2 class="text-2xl sm:text-3xl font-bold mt-3 tracking-tight font-sans">Instituto Politécnico de Administração e Serviços</h2>
+                <p class="text-slate-300 text-xs sm:text-sm mt-2 leading-relaxed">Repositório digital documental oficial. Registo histórico, notas enciclopédicas e acervo fotográfico permanente das atividades académicas da instituição.</p>
+                <div class="mt-5 flex flex-wrap gap-3">
+                    <button onclick="filterCategory('historia')" class="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg font-semibold text-xs shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-book-open text-xs"></i> Aceder à Enciclopédia Histórica
+                    </button>
+                    <button onclick="filterCategory('revista')" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2.5 rounded-lg font-semibold text-xs shadow transition flex items-center gap-2 border border-slate-700">
+                        <i class="fa-solid fa-images text-xs"></i> Consultar Revista & Galeria
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros e Sistema de Busca -->
+        <div class="mb-8 space-y-4">
+            <div class="relative max-w-lg">
+                <input type="text" id="search-input" onkeyup="handleSearch()" placeholder="Pesquisar nos registos do acervo e enciclopédia..." class="w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl shadow-sm text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <button id="clear-search" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 p-1"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar py-1 text-xs font-semibold">
+                <button onclick="filterCategory('all')" class="category-btn active bg-slate-900 text-white px-4 py-2 rounded-lg whitespace-nowrap shadow-sm transition" data-cat="all">🏛️ Todo o Acervo</button>
+                <button onclick="filterCategory('historia')" class="category-btn bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg whitespace-nowrap shadow-sm hover:bg-slate-50 transition" data-cat="historia">📜 História & Enciclopédia</button>
+                <button onclick="filterCategory('revista')" class="category-btn bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg whitespace-nowrap shadow-sm hover:bg-slate-50 transition" data-cat="revista">📰 Revista IPAS (Imagens)</button>
+                <button onclick="filterCategory('laboratorios')" class="category-btn bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg whitespace-nowrap shadow-sm hover:bg-slate-50 transition" data-cat="laboratorios">💻 Laboratórios & Campus</button>
+            </div>
+        </div>
+
+        <!-- Grelha de Conteúdos -->
+        <div class="mb-12">
+            <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-3">
+                <h3 class="font-bold text-base text-slate-900 tracking-tight">Registo Documental Institucional</h3>
+                <span id="product-count" class="text-xs text-slate-500 font-medium">A carregar registos...</span>
+            </div>
+            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <div id="no-products" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300 shadow-sm">
+                <i class="fa-solid fa-folder-open text-3xl text-slate-400 mb-3"></i>
+                <h4 class="font-bold text-slate-700 text-sm">Nenhum registo encontrado</h4>
+                <p class="text-xs text-slate-500 mt-1">Utilize o painel de administrador para inserir novas entradas no memorial.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Autenticação Administrador -->
+    <div id="admin-auth-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4 border border-slate-200">
+            <div class="text-center">
+                <div class="w-12 h-12 rounded-xl bg-slate-100 text-blue-900 flex items-center justify-center mx-auto mb-3 text-lg border border-slate-200">
+                    <i class="fa-solid fa-lock text-sm"></i>
+                </div>
+                <h3 class="font-bold text-sm text-slate-900">Painel Administrativo Restrito</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5">Introduza a credencial de segurança para aceder</p>
+            </div>
+            <form onsubmit="handleAdminLogin(event)" class="space-y-3">
+                <input type="password" id="admin-password" placeholder="••••••••••••••" required class="w-full text-xs p-3 bg-slate-50 border border-slate-300 rounded-lg outline-none focus:border-blue-600 text-center font-mono tracking-widest">
+                <div class="flex gap-2 pt-1">
+                    <button type="button" onclick="closeAdminAuth()" class="flex-1 bg-slate-100 hover:bg-slate-200 py-2.5 rounded-lg text-xs font-semibold text-slate-700 transition">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-blue-700 hover:bg-blue-800 text-white py-2.5 rounded-lg text-xs font-semibold transition shadow-sm">Autenticar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Painel de Controlo do Administrador -->
+    <div id="admin-panel-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden flex items-center justify-center p-3 sm:p-6">
+        <div class="bg-white rounded-2xl max-w-4xl w-full h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
+            <div class="p-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+                <h3 class="font-bold text-xs sm:text-sm flex items-center gap-2"><i class="fa-solid fa-sliders text-amber-400"></i> Painel de Controlo Técnico do Administrador</h3>
+                <button onclick="closeAdminPanel()" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-base"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50 space-y-6">
+                <!-- Formulário de Gestão -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <h4 class="font-bold text-xs text-slate-900 mb-3 flex items-center gap-2"><i class="fa-solid fa-circle-plus text-blue-700"></i> Registar ou Atualizar Elemento no Memorial</h4>
+                    <form onsubmit="handleSaveProduct(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <input type="hidden" id="prod-id">
+                        <input type="hidden" id="prod-media-base64">
+                        
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Título do Registo *</label>
+                            <input type="text" id="prod-name" placeholder="Ex: Relatório de Atividades ou Exposição" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg outline-none focus:border-blue-600">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Referência / Período</label>
+                            <input type="text" id="prod-price" placeholder="Ex: Outubro 2026" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg outline-none focus:border-blue-600">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Categoria de Destino</label>
+                            <select id="prod-category" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg outline-none focus:border-blue-600">
+                                <option value="historia">📜 História & Enciclopédia (Texto Puro)</option>
+                                <option value="revista">📰 Revista IPAS (Adicionar Imagem)</option>
+                                <option value="laboratorios">💻 Laboratórios & Campus (Adicionar Imagem)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Formato de Conteúdo</label>
+                            <select id="prod-type" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg outline-none focus:border-blue-600" onchange="toggleMediaType()">
+                                <option value="text">📄 Texto Descritivo / Enciclopédia</option>
+                                <option value="image">📷 Imagem Fotográfica</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-2 hidden" id="media-input-container">
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Ficheiro de Imagem *</label>
+                            <input type="file" id="prod-file" accept="image/*" onchange="convertMediaFile(event)" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg outline-none text-xs file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-900 file:text-white hover:file:bg-slate-800">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Texto Descritivo / Documental *</label>
+                            <textarea id="prod-dosage" rows="6" placeholder="Insira o conteúdo detalhado, cronologia ou descrição formal..." class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg outline-none focus:border-blue-600" required></textarea>
+                        </div>
+                        <div class="sm:col-span-2 flex gap-2 pt-2">
+                            <button type="submit" class="flex-1 bg-blue-700 hover:bg-blue-800 text-white font-semibold py-2.5 rounded-lg transition shadow-sm">Guardar Alterações</button>
+                            <button type="button" onclick="resetAdminForm()" class="px-4 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-semibold transition">Limpar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tabela de Registos Existentes -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <h4 class="font-bold text-xs text-slate-900 mb-3">Gestão e Eliminação de Registos Ativos</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-slate-100 uppercase text-slate-600 font-semibold">
+                                <tr>
+                                    <th class="p-2.5">Mídia</th>
+                                    <th class="p-2.5">Título</th>
+                                    <th class="p-2.5">Categoria</th>
+                                    <th class="p-2.5 text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-products-list" class="divide-y divide-slate-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-20 right-4 z-50 bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xl transform translate-x-full transition-transform border border-slate-800">
+        <span id="toast-msg">Operação efetuada com sucesso.</span>
+    </div>
+
+    <!-- Script Principal -->
+    <script>
+        const ADMIN_PASSWORD = "cassialuana093"; 
+        
+        const defaultSchoolData = [
+            {
+                id: "ipas-historia-enciclopedia",
+                name: "Enquadramento Histórico e Institucional do IPAS",
+                price: "Fundação: 16 de Julho de 2020",
+                category: "historia",
+                mediaType: "text",
+                dosage: "O Instituto Politécnico de Administração e Serviços (IPAS), operando formalmente sob as referências institucionais Nº 2051 e Nº 5144[cite: 1], constitui-se como uma instituição de ensino secundário técnico-profissional de referência na República de Angola. A fundação e criação oficial da escola decorreram a 16 de Julho de 2020[cite: 1], legitimadas pelo Decreto Presidencial 210/20[cite: 1], um instrumento normativo estruturante concebido para expandir, qualificar e modernizar a rede escolar de formação de quadros médios técnicos, respondendo diretamente às crescentes exigências de desenvolvimento socioeconómico e modernização administrativa do país[cite: 1].\n\nA instituição encontra-se em regime de funcionamento contínuo, contabilizando mais de seis anos de atividade dedicada ao saber, à inovação pedagógica e à excelência educativa[cite: 1]. Estrategicamente localizada para servir de polo de desenvolvimento comunitário, a escola expande a sua presença operativa em recintos de excelência situados no Zango Zero (Vida Pacífica) e na província de Icolo e Bengo[cite: 1]. Estes complexos infraestruturais foram rigorosamente planejados para assegurar um ambiente institucional seguro, disciplinado, limpo e altamente favorável ao processo de ensino-aprendizagem.\n\nNo que concerne às infraestruturas físicas e logísticas, o IPAS dispõe de dezenas de salas de aula amplas, devidamente ventiladas e iluminadas, articuladas em múltiplos turnos de atendimento (manhã, tarde e noite) para albergar o corpo discente com total dignidade e conforto[cite: 1]. O campus integra ainda áreas de recreação pedagógica, espaços verdes preservados, zonas de estudo autónomo e laboratórios tecnológicos avançados, dotados de recursos computacionais e informáticos necessários para a prática letiva diária e para a consolidação das competências técnicas exigidas pelo mercado de trabalho contemporâneo.\n\nA dinâmica diretiva, administrativa e pedagógica do instituto é assegurada por um corpo docente altamente qualificado, gestores educacionais experientes e pessoal de apoio empenhado no acompanhamento integral da comunidade estudantil. A matriz axiológica do IPAS fundamenta-se em princípios de rigor científico, integridade moral, deontologia profissional, responsabilidade cívica e constante busca pela inovação tecnológica. Consolidado como um verdadeiro marco educacional, o IPAS continua a projetar o futuro através da formação sólida e humanizada de gerações preparadas para os desafios de Angola."
+            },
+            {
+                id: "ipas-revista-1",
+                name: "Revista Oficial • Marcos e Atividades Institucionais",
+                price: "Registo Fotográfico • Acervo",
+                category: "revista",
+                mediaType: "image",
+                media: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&fit=crop",
+                dosage: "Repositório fotográfico documental dedicado aos principais marcos comemorativos da instituição, incluindo as celebrações solenes do aniversário natalício a 16 de Julho, feiras de projetos técnicos, encontros pedagógicos e as cerimónias oficiais de outorga de certificados de conclusão de curso."
+            },
+            {
+                id: "ipas-lab",
+                name: "Infraestrutura Tecnológica e Laboratórios",
+                price: "Recintos Académicos do Campus",
+                category: "laboratorios",
+                mediaType: "image",
+                media: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600&fit=crop",
+                dosage: "Documentação visual dos laboratórios modernos e salas de suporte técnico equipadas com infraestrutura computacional de ponta, permitindo o desenvolvimento prático das competências dos alunos em ambiente simulado e real."
+            }
+        ];
+
+        let products = [];
+        let currentCategory = 'all';
+        let searchQuery = '';
+        let adminLoggedIn = false;
+        let useFirebase = false;
+
+        window.addEventListener('firebase-ready', () => {
+            useFirebase = true;
+            const { collection, onSnapshot } = window.firebaseCollections;
+            const db = window.db;
+
+            onSnapshot(collection(db, "memorial_ipas"), (snapshot) => {
+                let fbProducts = [];
+                snapshot.forEach((docSnap) => {
+                    fbProducts.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                
+                if (fbProducts.length > 0) {
+                    products = fbProducts;
+                } else {
+                    products = [...defaultSchoolData];
+                }
+
+                document.getElementById('sync-status').className = "w-2 h-2 rounded-full bg-emerald-500 inline-block";
+                renderProducts();
+                if(!document.getElementById('admin-panel-modal').classList.contains('hidden')) {
+                    renderAdminProductsTable();
+                }
+            }, (error) => {
+                loadLocalStorage();
+            });
+        });
+
+        window.addEventListener('firebase-fallback', () => {
+            loadLocalStorage();
+        });
+
+        function loadLocalStorage() {
+            useFirebase = false;
+            document.getElementById('sync-status').className = "w-2 h-2 rounded-full bg-blue-500 inline-block";
+            const localData = localStorage.getItem('memorial_ipas_local');
+            if (localData) {
+                try { products = JSON.parse(localData); } catch(e) { products = [...defaultSchoolData]; }
+            } else {
+                products = [...defaultSchoolData];
+            }
+            renderProducts();
+        }
+
+        function saveLocal() {
+            localStorage.setItem('memorial_ipas_local', JSON.stringify(products));
+        }
+
+        function toggleMediaType() {
+            const type = document.getElementById('prod-type').value;
+            const container = document.getElementById('media-input-container');
+            
+            if(type === 'text') {
+                container.classList.add('hidden');
+            } else {
+                container.classList.remove('hidden');
+            }
+        }
+
+        function convertMediaFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('prod-media-base64').value = e.target.result;
+                    showToast('Ficheiro de imagem carregado com sucesso.');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            const noProducts = document.getElementById('no-products');
+            const countEl = document.getElementById('product-count');
+            
+            let filtered = products.filter(p => {
+                const matchesCat = currentCategory === 'all' || p.category === currentCategory;
+                const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                     (p.dosage && p.dosage.toLowerCase().includes(searchQuery.toLowerCase()));
+                return matchesCat && matchesSearch;
+            });
+
+            countEl.textContent = `${filtered.length} registo(s) encontrado(s)`;
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                noProducts.classList.remove('hidden');
+                return;
+            }
+
+            noProducts.classList.add('hidden');
+            grid.innerHTML = filtered.map(p => {
+                const isText = p.mediaType === 'text' || (!p.media);
+                const catNames = {
+                    'historia': '📜 História e Enciclopédia',
+                    'revista': '📰 Revista IPAS',
+                    'laboratorios': '💻 Laboratórios & Campus'
+                };
+
+                let mediaHTML = isText ? '' : `
+                    <div class="overflow-hidden bg-slate-100 h-52 sm:h-56 relative border-b border-slate-100">
+                        <img src="${p.media}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    </div>
+                `;
+
+                return `
+                    <div class="bg-white rounded-xl border border-slate-200 academic-shadow overflow-hidden flex flex-col justify-between relative group transition hover:border-slate-300 ${isText ? 'sm:col-span-2 lg:col-span-3 bg-gradient-to-br from-white to-slate-50' : ''}">
+                        ${mediaHTML}
+                        <div class="p-6 sm:p-7 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2.5">
+                                    <span class="text-[10px] font-bold uppercase text-blue-800 bg-blue-50 px-2.5 py-1 rounded border border-blue-100">${catNames[p.category] || p.category}</span>
+                                    <span class="font-bold text-slate-500 text-xs">${p.price || 'IPAS'}</span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 text-base sm:text-lg tracking-tight font-sans">${p.name}</h4>
+                                <p class="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed whitespace-pre-line font-sans">${p.dosage || 'Informação institucional oficial.'}</p>
+                            </div>
+                            <div class="mt-6 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                                <span><i class="fa-solid fa-certificate text-blue-700 mr-1"></i> Documento Institucional Verificado</span>
+                                <span class="text-slate-600 font-semibold">IPAS Oficial</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function handleSaveProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('prod-id').value;
+            const mediaType = document.getElementById('prod-type').value;
+            const mediaBase64 = document.getElementById('prod-media-base64').value;
+
+            const data = {
+                name: document.getElementById('prod-name').value,
+                price: document.getElementById('prod-price').value,
+                category: document.getElementById('prod-category').value,
+                mediaType: mediaType,
+                dosage: document.getElementById('prod-dosage').value
+            };
+
+            if(mediaType !== 'text' && mediaBase64) {
+                data.media = mediaBase64;
+            }
+
+            if (useFirebase) {
+                try {
+                    const { collection, addDoc, updateDoc, doc } = window.firebaseCollections;
+                    const db = window.db;
+                    if(id) {
+                        await updateDoc(doc(db, "memorial_ipas", id), data);
+                    } else {
+                        await addDoc(collection(db, "memorial_ipas"), data);
+                    }
+                } catch (err) {
+                    saveLocalFallback(id, data);
+                }
+            } else {
+                saveLocalFallback(id, data);
+            }
+
+            showToast('Registo guardado com sucesso.');
+            resetAdminForm();
+            renderProducts();
+            renderAdminProductsTable();
+        }
+
+        function saveLocalFallback(id, data) {
+            if (id) {
+                products = products.map(p => p.id === id ? { ...p, ...data } : p);
+            } else {
+                data.id = 'local-' + Date.now();
+                products.unshift(data);
+            }
+            saveLocal();
+        }
+
+        async function deleteProduct(id) {
+            if(confirm('Confirma a remoção definitiva deste registo do acervo institucional?')) {
+                if (useFirebase) {
+                    try {
+                        const { deleteDoc, doc } = window.firebaseCollections;
+                        await deleteDoc(doc(window.db, "memorial_ipas", id));
+                    } catch(e) {}
+                }
+                products = products.filter(p => p.id !== id);
+                saveLocal();
+                renderProducts();
+                renderAdminProductsTable();
+                showToast('Registo removido.');
+            }
+        }
+
+        function editProduct(id) {
+            const p = products.find(item => item.id === id);
+            if(!p) return;
+            document.getElementById('prod-id').value = p.id;
+            document.getElementById('prod-name').value = p.name;
+            document.getElementById('prod-price').value = p.price || '';
+            document.getElementById('prod-category').value = p.category;
+            document.getElementById('prod-type').value = p.mediaType || 'text';
+            toggleMediaType();
+            document.getElementById('prod-dosage').value = p.dosage || '';
+            document.getElementById('prod-media-base64').value = p.media || '';
+            showToast('A carregar dados para edição.');
+        }
+
+        function resetAdminForm() {
+            document.getElementById('prod-id').value = '';
+            document.getElementById('prod-name').value = '';
+            document.getElementById('prod-price').value = '';
+            document.getElementById('prod-type').value = 'text';
+            toggleMediaType();
+            document.getElementById('prod-dosage').value = '';
+            document.getElementById('prod-file').value = '';
+            document.getElementById('prod-media-base64').value = '';
+        }
+
+        function renderAdminProductsTable() {
+            const list = document.getElementById('admin-products-list');
+            if(products.length === 0) {
+                list.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Nenhum registo disponível.</td></tr>`;
+                return;
+            }
+            list.innerHTML = products.map(p => `
+                <tr>
+                    <td class="p-2.5">
+                        ${p.mediaType === 'text' ? '<div class="w-10 h-10 bg-slate-200 rounded flex items-center justify-center text-slate-700 font-bold text-[10px]">TXT</div>' : `<img src="${p.media}" class="w-10 h-10 object-cover rounded border border-slate-200">`}
+                    </td>
+                    <td class="p-2.5 font-semibold text-slate-800">${p.name}</td>
+                    <td class="p-2.5 text-slate-500">${p.category}</td>
+                    <td class="p-2.5 text-center space-x-1">
+                        <button type="button" onclick="editProduct('${p.id}')" class="p-1.5 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 transition" title="Editar"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button type="button" onclick="deleteProduct('${p.id}')" class="p-1.5 bg-red-50 hover:bg-red-100 rounded text-red-600 transition" title="Apagar"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if(btn.dataset.cat === cat) btn.className = "category-btn active bg-slate-900 text-white px-4 py-2 rounded-lg whitespace-nowrap shadow-sm transition";
+                else btn.className = "category-btn bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg whitespace-nowrap shadow-sm hover:bg-slate-50 transition";
+            });
+            renderProducts();
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById('search-input').value;
+            renderProducts();
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            searchQuery = '';
+            renderProducts();
+        }
+
+        function openAdminAuth() {
+            if(adminLoggedIn) {
+                document.getElementById('admin-panel-modal').classList.remove('hidden');
+                renderAdminProductsTable();
+            } else {
+                document.getElementById('admin-auth-modal').classList.remove('hidden');
+            }
+        }
+        function closeAdminAuth() { document.getElementById('admin-auth-modal').classList.add('hidden'); }
+        
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('admin-password').value;
+            if(pass === ADMIN_PASSWORD) {
+                adminLoggedIn = true;
+                closeAdminAuth();
+                document.getElementById('admin-password').value = '';
+                document.getElementById('admin-panel-modal').classList.remove('hidden');
+                renderAdminProductsTable();
+                showToast('Sessão administrativa iniciada.');
+            } else {
+                alert('Credencial de acesso incorreta.');
+            }
+        }
+        function closeAdminPanel() { document.getElementById('admin-panel-modal').classList.add('hidden'); }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = msg;
+            t.classList.remove('translate-x-full');
+            setTimeout(() => t.classList.add('translate-x-full'), 3000);
+        }
+    </script>
+</body>
+</html>,,,
